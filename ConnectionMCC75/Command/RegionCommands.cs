@@ -146,10 +146,12 @@ public class RegionCommands
                 // INSERT INTO tb_m_regions VALUES ('entity.Name')
 
                 // Parameter Name
-                SqlParameter pEditName = new SqlParameter();
-                pEditName.ParameterName = "@edit";
-                pEditName.SqlDbType = System.Data.SqlDbType.VarChar;
-                pEditName.Value = entity.Name;
+                SqlParameter pEditName = new SqlParameter()
+                {
+                    ParameterName = "@edit",
+                    SqlDbType = System.Data.SqlDbType.VarChar,
+                    Value = entity.Name
+                };
                 sqlCommand.Parameters.Add(pEditName);
 
                 SqlParameter pEditId = new SqlParameter();
