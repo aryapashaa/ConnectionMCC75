@@ -12,7 +12,12 @@ public class Program
     {
         Program program = new Program();
         Region region = new Region();
-
+        Console.WriteLine("==CRUD==");
+        string[] crud = new string[] { "Create", "Read", "Read by ID","Update", "Delete" };
+        for (int i = 0; i < crud.Length; i++)
+        {
+            Console.WriteLine($"[{i+1}] - {crud[i]}");
+        }
         Console.Write("Pilih Menu: ");
         int pilih = Convert.ToInt32(Console.ReadLine());
 
@@ -60,35 +65,51 @@ public class Program
             SqlCommand sqlCommand = sqlConnection.CreateCommand();
             sqlCommand.Transaction = sqlTransaction;
 
-            sqlCommand.CommandText = "INSERT INTO tb_m_regions VALUES (@name);";
+            try
+            {
+                sqlCommand.CommandText = "INSERT INTO tb_m_regions VALUES (@name);";
+                // INSERT INTO tb_m_regions VALUES ('entity.Name')
 
-            // Untuk menambahkan parameter
-            SqlParameter pName = new SqlParameter();
-            pName.ParameterName = "@name";
-            pName.SqlDbType = System.Data.SqlDbType.VarChar;
-            pName.Value = entity.Name;
-            sqlCommand.Parameters.Add(pName);
+                // Parameter Name
+                SqlParameter pName = new SqlParameter();
+                pName.ParameterName = "@name";
+                pName.SqlDbType = System.Data.SqlDbType.VarChar;
+                pName.Value = entity.Name;
+                sqlCommand.Parameters.Add(pName);
 
-            // Untuk menjalankan perintah transaksi
-            sqlCommand.ExecuteNonQuery();
-            sqlTransaction.Commit();
+                // Untuk menjalankan perintah transaksi
+                sqlCommand.ExecuteNonQuery();
+                sqlTransaction.Commit();
 
-            Console.WriteLine("Data berhasil dimasukkan");
+                Console.WriteLine("Data Berhasil Di Masukan");
 
-            sqlConnection.Close();
+                sqlConnection.Close();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                try
+                {
+                    sqlTransaction.Rollback();
+                }
+                catch (Exception exRollback)
+                {
+                    Console.WriteLine(exRollback.Message);
+                }
+            }
         }
     }
     //Read / View
     public void GetRegions()
     {
-        sqlConnection= new SqlConnection(connectionString);
+        sqlConnection = new SqlConnection(connectionString);
 
-        // Membuat instance SQLCommand untuk mendefinisikan query & connection
+        // Membuat instance SqlCommand untuk mendifinisikan sebuah query & connection
         SqlCommand sqlCommand = new SqlCommand();
         sqlCommand.Connection = sqlConnection;
         sqlCommand.CommandText = "SELECT * FROM tb_m_regions;";
 
-        // Membuka koneksi
+        // membuka koneksi
         sqlConnection.Open();
 
         using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
@@ -96,7 +117,7 @@ public class Program
             // Mengecek apakah ada data atau tidak
             if (sqlDataReader.HasRows)
             {
-                // Jika ada, maka tampilkan datanya
+                //jika ada, maka tampilkan datanya
                 while (sqlDataReader.Read())
                 {
                     Console.WriteLine("Id : " + sqlDataReader[0]);
@@ -116,108 +137,54 @@ public class Program
     {
         sqlConnection = new SqlConnection(connectionString);
 
-        // Membuat instance SQLCommand untuk mendefinisikan query & connection
-        SqlCommand sqlCommand = new SqlCommand();
-        sqlCommand.Connection = sqlConnection;
-        sqlCommand.CommandText = "SELECT * FROM tb_m_regions WHERE id = @id;";
-
-        SqlParameter pId = new SqlParameter();
-        pId.ParameterName = "@id";
-        pId.SqlDbType = System.Data.SqlDbType.Int;
-        pId.Value = id;
-        sqlCommand.Parameters.Add(pId);
-            
-        // Membuka koneksi
-        sqlConnection.Open();
-
-        using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+        try
         {
-            // Mengecek apakah ada data atau tidak
-            if (sqlDataReader.HasRows)
+            // Membuat instance SqlCommand untuk mendifinisikan sebuah query & connection
+            SqlCommand sqlCommand = new SqlCommand();
+            sqlCommand.Connection = sqlConnection;
+            sqlCommand.CommandText = "SELECT * FROM tb_m_regions WHERE id = @id;";
+
+            SqlParameter pId = new SqlParameter();
+            pId.ParameterName = "@id";
+            pId.SqlDbType = System.Data.SqlDbType.Int;
+            pId.Value = id;
+            sqlCommand.Parameters.Add(pId);
+
+            // membuka koneksi
+            sqlConnection.Open();
+
+            using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
             {
-                // Jika ada, maka tampilkan datanya
-                sqlDataReader.Read();
-                
-                Console.WriteLine("Id : " + sqlDataReader[0]);
-                Console.WriteLine("Name : " + sqlDataReader[1]);
+                // Mengecek apakah ada data atau tidak
+                if (sqlDataReader.HasRows)
+                {
+                    //jika ada, maka tampilkan datanya
+                    sqlDataReader.Read();
+
+                    Console.WriteLine("Id : " + sqlDataReader[0]);
+                    Console.WriteLine("Name : " + sqlDataReader[1]);
+                }
+                else
+                {
+                    Console.WriteLine("Id Tidak Ditemukan");
+                }
+                sqlDataReader.Close();
             }
-            else
-            {
-                Console.WriteLine("Id tidak ditemukan");
-            }
-            sqlDataReader.Close();
+            sqlConnection.Close();
         }
-        sqlConnection.Close();
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
     }
     //Update
-    public void UpdateRegion(Region entity, int id)
+    public void UpdateRegion()
     {
-            sqlConnection.Open();
-            SqlTransaction sqlTransaction = sqlConnection.BeginTransaction();
-            SqlCommand sqlCommand = sqlConnection.CreateCommand();
-            sqlCommand.Transaction = sqlTransaction;
-
-            sqlCommand.CommandText = "UPDATE tb_m_regions SET name = @edit WHERE id = @edit_id;";
-
-            // Untuk menambahkan parameter
-            SqlParameter pEdit = new SqlParameter();
-            pEdit.ParameterName = "@edit";
-            pEdit.SqlDbType = System.Data.SqlDbType.VarChar;
-            pEdit.Value = entity.Name;
-            sqlCommand.Parameters.Add(pEdit);
-
-            // Untuk menambahkan parameter
-            SqlParameter pEditId = new SqlParameter();
-            pEditId.ParameterName = "@edit_id";
-            pEditId.SqlDbType = System.Data.SqlDbType.Int;
-            pEditId.Value = id;
-            sqlCommand.Parameters.Add(pEditId);
-
-            // Untuk menjalankan perintah transaksi
-            sqlCommand.ExecuteNonQuery();
-            sqlTransaction.Commit();
-
-        Console.WriteLine("Data berhasil diedit");
-
-            sqlConnection.Close();
+        //sqlCommand.CommandText = "UPDATE tb_m_regions SET name = @edit WHERE id = @edit_id;";
     }
     //Delete
-    public void DeleteRegion(Region entity)
+    public void DeleteRegion()
     {
-        sqlConnection = new SqlConnection(connectionString);
-
-        // Membuat instance SQLCommand untuk mendefinisikan query & connection
-        SqlTransaction sqlTransaction = sqlConnection.BeginTransaction();
-        SqlCommand sqlCommand = sqlConnection.CreateCommand();
-        sqlCommand.Transaction = sqlTransaction;
-        sqlCommand.Connection = sqlConnection;
-        sqlCommand.CommandText = "DELETE FROM tb_m_regions WHERE id = @delete_id;";
-
-        SqlParameter pDelete_Id = new SqlParameter();
-        pDelete_Id.ParameterName = "@delete_id";
-        pDelete_Id.SqlDbType = System.Data.SqlDbType.Int;
-        pDelete_Id.Value = entity.Id;
-        sqlCommand.Parameters.Add(pDelete_Id);
-
-        // Membuka koneksi
-        sqlConnection.Open();
-
-        using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
-        {
-            // Mengecek apakah ada data atau tidak
-            if (sqlDataReader.HasRows)
-            {
-                sqlCommand.ExecuteNonQuery();
-                sqlTransaction.Commit();
-
-                Console.WriteLine("Data berhasil dihapus");
-            }
-            else
-            {
-                Console.WriteLine("Id tidak ditemukan");
-            }
-            sqlDataReader.Close();
-        }
-        sqlConnection.Close();
+        //sqlCommand.CommandText = "DELETE FROM tb_m_regions WHERE id = @delete_id;";
     }
 }
