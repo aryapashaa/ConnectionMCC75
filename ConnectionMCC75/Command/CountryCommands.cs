@@ -147,7 +147,7 @@ public class CountryCommands
 
             try
             {
-                sqlCommand.CommandText = "UPDATE tb_m_countries SET name = @edit WHERE id = @edit_id;";
+                sqlCommand.CommandText = "UPDATE tb_m_countries SET name = @edit, region_id = @edit_region_id WHERE id = @edit_id;";
 
                 // Parameter Name
                 SqlParameter pEditName = new SqlParameter();
@@ -155,6 +155,14 @@ public class CountryCommands
                 pEditName.SqlDbType = System.Data.SqlDbType.VarChar;
                 pEditName.Value = entity.Name;
                 sqlCommand.Parameters.Add(pEditName);
+
+                SqlParameter pEditRegId = new SqlParameter()
+                {
+                    ParameterName = "@edit_region_id",
+                    SqlDbType = System.Data.SqlDbType.Int,
+                    Value = entity.RegionId
+                };
+                sqlCommand.Parameters.Add(pEditRegId);
 
                 SqlParameter pEditId = new SqlParameter();
                 pEditId.ParameterName = "@edit_id";

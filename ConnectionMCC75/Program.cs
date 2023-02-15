@@ -232,8 +232,11 @@ public class Program
                     int editId = Convert.ToInt32(Console.ReadLine());
                     Console.Write("Masukkan nama Country baru : ");
                     string editCountry = Console.ReadLine();
+                    Console.Write("Masukkan Region ID baru : ");
+                    int editRegId = Convert.ToInt32(Console.ReadLine());
                     country.Id = editId;
                     country.Name = editCountry;
+                    country.RegionId = editRegId;
                     int resultUpdate = command_country.Update(country);
                     if (resultUpdate > 0)
                     {
