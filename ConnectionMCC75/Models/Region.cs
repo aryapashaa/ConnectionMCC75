@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConnectionMCC75.Model;
+namespace ConnectionMCC75.Models;
 
 public class Region
 {

@@ -1,190 +1,270 @@
-﻿using ConnectionMCC75.Model;
+﻿using ConnectionMCC75.Command;
+using ConnectionMCC75.Models;
 using System.Data.SqlClient;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ConnectionMCC75;
 
 public class Program
 {
-    SqlConnection sqlConnection;
-    string connectionString = "Data Source=ARYA;Initial Catalog=db_hr_arya;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
+    public static Region region = new Region();
+    public static RegionCommands command_region = new RegionCommands();
 
-    public static void Main(string[] args)
+    public static Country country = new Country();
+    public static CountryCommands command_country = new CountryCommands();
+
+    public static void Main()
     {
-        Program program = new Program();
-        Region region = new Region();
+        Console.Clear();
         Console.WriteLine("==CRUD==");
-        string[] crud = new string[] { "Create", "Read", "Read by ID","Update", "Delete" };
-        for (int i = 0; i < crud.Length; i++)
+        string[] table = new string[] { "Regions", "Countries" , "Exit"};
+        for (int i = 0; i < table.Length; i++)
         {
-            Console.WriteLine($"[{i+1}] - {crud[i]}");
+            Console.WriteLine($"[{i + 1}] - {table[i]}");
         }
-        Console.Write("Pilih Menu: ");
-        int pilih = Convert.ToInt32(Console.ReadLine());
+        Console.Write("Pilih Tabel: ");
+        int pilihTabel = Convert.ToInt32(Console.ReadLine());
 
-        switch (pilih)
+        switch (pilihTabel)
         {
             case 1:
-                Console.Write("Masukkan nama Region baru : ");
-                string inputRegion = Console.ReadLine();
-                region.Name = inputRegion;
-                program.InsertRegion(region);
+                TableRegions();
                 break;
             case 2:
-                program.GetRegions();
+                TableCountries();
                 break;
             case 3:
-                Console.Write("Masukkan ID yang ingin ditampilkan : ");
-                int tampilId = Convert.ToInt32(Console.ReadLine());
-                program.GetByIdRegion(tampilId);
-                break;
-            case 4:
-                Console.Write("Masukkan ID yang ingin diubah : ");
-                int editId = Convert.ToInt32(Console.ReadLine());
-                Console.Write("Masukkan nama Region baru : ");
-                string editRegion = Console.ReadLine();
-                region.Name = editRegion;
-                program.UpdateRegion(region, editId);
-                break;
-            case 5:
-                Console.Write("Masukkan ID yang ingin dihapus : ");
-                int hapusId = Convert.ToInt32(Console.ReadLine());
-                region.Id = hapusId;
-                program.DeleteRegion(region);
+                System.Environment.Exit(0);
                 break;
             default:
                 break;
         }
     }
-    //Create
-    public void InsertRegion(Region entity)
+    public static void TableRegions()
     {
-        using (sqlConnection = new SqlConnection(connectionString))
+        bool key = true;
+        do
         {
-            sqlConnection.Open();
-            SqlTransaction sqlTransaction = sqlConnection.BeginTransaction();
-            SqlCommand sqlCommand = sqlConnection.CreateCommand();
-            sqlCommand.Transaction = sqlTransaction;
-
-            try
+            Console.Clear();
+            Console.WriteLine("==REGIONS TABLE==");
+            Console.WriteLine("==MENU==");
+            string[] crud = new string[] { "Create", "Read", "Read by ID", "Update", "Delete", "Back" };
+            for (int i = 0; i < crud.Length; i++)
             {
-                sqlCommand.CommandText = "INSERT INTO tb_m_regions VALUES (@name);";
-                // INSERT INTO tb_m_regions VALUES ('entity.Name')
-
-                // Parameter Name
-                SqlParameter pName = new SqlParameter();
-                pName.ParameterName = "@name";
-                pName.SqlDbType = System.Data.SqlDbType.VarChar;
-                pName.Value = entity.Name;
-                sqlCommand.Parameters.Add(pName);
-
-                // Untuk menjalankan perintah transaksi
-                sqlCommand.ExecuteNonQuery();
-                sqlTransaction.Commit();
-
-                Console.WriteLine("Data Berhasil Di Masukan");
-
-                sqlConnection.Close();
+                Console.WriteLine($"[{i + 1}] - {crud[i]}");
             }
-            catch (Exception ex)
+            Console.Write("Pilih Menu: ");
+            int pilihMenu = Convert.ToInt32(Console.ReadLine());
+
+            switch (pilihMenu)
             {
-                Console.WriteLine(ex.Message);
-                try
-                {
-                    sqlTransaction.Rollback();
-                }
-                catch (Exception exRollback)
-                {
-                    Console.WriteLine(exRollback.Message);
-                }
+                case 1: //Create
+                    Console.Clear();
+                    Console.Write("Masukkan nama Region baru : ");
+                    string inputRegion = Console.ReadLine();
+                    region.Name = inputRegion;
+                    int resultCreate = command_region.Insert(region);
+                    if (resultCreate > 0)
+                    {
+                        Console.WriteLine("Data Berhasil Disimpan");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Data Gagal Disimpan");
+                    }
+                    Console.ReadKey();
+                    break;
+                case 2: //Read
+                    Console.Clear();
+                    List<Region> resultRead = command_region.GetAll();
+                    if (resultRead == null)
+                    {
+                        Console.WriteLine("Data tidak ditemukan");
+                    }
+                    else
+                    {
+                        foreach (var item in resultRead)
+                        {
+                            Console.WriteLine("Id : " + item.Id);
+                            Console.WriteLine("Name : " + item.Name);
+                        }
+                    }
+                    Console.ReadKey();
+                    break;
+                case 3:
+                    Console.Clear();
+                    Console.Write("Masukkan ID yang ingin ditampilkan : ");
+                    int tampilId = Convert.ToInt32(Console.ReadLine());
+                    Region resultReadById = command_region.GetById(tampilId);
+                    if (resultReadById == null)
+                    {
+                        Console.WriteLine("Data tidak ditemukan");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Id : " + resultReadById.Id);
+                        Console.WriteLine("Name : " + resultReadById.Name);
+                    }
+                    Console.ReadKey();
+                    break;
+                case 4:
+                    Console.Clear();
+                    Console.Write("Masukkan ID yang ingin diubah : ");
+                    int editId = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Masukkan nama Region baru : ");
+                    string editRegion = Console.ReadLine();
+                    region.Id = editId;
+                    region.Name = editRegion;
+                    int resultUpdate = command_region.Update(region);
+                    if (resultUpdate > 0)
+                    {
+                        Console.WriteLine("Data Berhasil Diperbaharui");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Data Gagal Diperbaharui");
+                    }
+                    Console.ReadKey();
+                    break;
+                case 5:
+                    Console.Clear();
+                    Console.Write("Masukkan ID yang ingin dihapus : ");
+                    int hapusId = Convert.ToInt32(Console.ReadLine());
+                    int resultDelete = command_region.Delete(hapusId);
+                    if (resultDelete > 0)
+                    {
+                        Console.WriteLine("Data Berhasil Dihapus");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Data Gagal Dihapus");
+                    }
+                    Console.ReadKey();
+                    break;
+                case 6:
+                    Main();
+                    break;
+                default:
+                    Console.Write("Pilihan salah");
+                    Console.ReadKey();
+                    break;
             }
-        }
+        } while (key);
     }
-    //Read / View
-    public void GetRegions()
+    public static void TableCountries()
     {
-        sqlConnection = new SqlConnection(connectionString);
-
-        // Membuat instance SqlCommand untuk mendifinisikan sebuah query & connection
-        SqlCommand sqlCommand = new SqlCommand();
-        sqlCommand.Connection = sqlConnection;
-        sqlCommand.CommandText = "SELECT * FROM tb_m_regions;";
-
-        // membuka koneksi
-        sqlConnection.Open();
-
-        using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
+        bool key = true;
+        do
         {
-            // Mengecek apakah ada data atau tidak
-            if (sqlDataReader.HasRows)
+            Console.Clear();
+            Console.WriteLine("==COUNTRIES TABLE==");
+            Console.WriteLine("==MENU==");
+            string[] crud = new string[] { "Create", "Read", "Read by ID", "Update", "Delete", "Back" };
+            for (int i = 0; i < crud.Length; i++)
             {
-                //jika ada, maka tampilkan datanya
-                while (sqlDataReader.Read())
-                {
-                    Console.WriteLine("Id : " + sqlDataReader[0]);
-                    Console.WriteLine("Name : " + sqlDataReader[1]);
-                }
+                Console.WriteLine($"[{i + 1}] - {crud[i]}");
             }
-            else
+            Console.Write("Pilih Menu: ");
+            int pilihMenu = Convert.ToInt32(Console.ReadLine());
+
+            switch (pilihMenu)
             {
-                Console.WriteLine("Data Kosong");
+                case 1: //Create
+                    Console.Clear();
+                    Console.Write("Masukkan nama Country baru : ");
+                    string inputCountry = Console.ReadLine();
+                    Console.Write("Masukkan Region ID-nya : ");
+                    int inputRegId = Convert.ToInt32(Console.ReadLine());
+                    country.Name = inputCountry;
+                    country.RegionId = inputRegId;
+                    int resultCreate = command_country.Insert(country);
+                    if (resultCreate > 0)
+                    {
+                        Console.WriteLine("Data Berhasil Disimpan");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Data Gagal Disimpan");
+                    }
+                    Console.ReadKey();
+                    break;
+                case 2: //Read
+                    Console.Clear();
+                    List<Country> resultRead = command_country.GetAll();
+                    if (resultRead == null)
+                    {
+                        Console.WriteLine("Data tidak ditemukan");
+                    }
+                    else
+                    {
+                        foreach (var item in resultRead)
+                        {
+                            Console.WriteLine("Id : " + item.Id);
+                            Console.WriteLine("Name : " + item.Name);
+                            Console.WriteLine("Region Id : " + item.RegionId);
+                        }
+                    }
+                    Console.ReadKey();
+                    break;
+                case 3:
+                    Console.Clear();
+                    Console.Write("Masukkan ID yang ingin ditampilkan : ");
+                    int tampilId = Convert.ToInt32(Console.ReadLine());
+                    Country resultReadById = command_country.GetById(tampilId);
+                    if (resultReadById == null)
+                    {
+                        Console.WriteLine("Data tidak ditemukan");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Id : " + resultReadById.Id);
+                        Console.WriteLine("Name : " + resultReadById.Name);
+                        Console.WriteLine("Region Id : " + resultReadById.RegionId);
+                    }
+                    Console.ReadKey();
+                    break;
+                case 4:
+                    Console.Clear();
+                    Console.Write("Masukkan ID yang ingin diubah : ");
+                    int editId = Convert.ToInt32(Console.ReadLine());
+                    Console.Write("Masukkan nama Country baru : ");
+                    string editCountry = Console.ReadLine();
+                    country.Id = editId;
+                    country.Name = editCountry;
+                    int resultUpdate = command_country.Update(country);
+                    if (resultUpdate > 0)
+                    {
+                        Console.WriteLine("Data Berhasil Diperbaharui");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Data Gagal Diperbaharui");
+                    }
+                    Console.ReadKey();
+                    break;
+                case 5:
+                    Console.Clear();
+                    Console.Write("Masukkan ID yang ingin dihapus : ");
+                    int hapusId = Convert.ToInt32(Console.ReadLine());
+                    int resultDelete = command_country.Delete(hapusId);
+                    if (resultDelete > 0)
+                    {
+                        Console.WriteLine("Data Berhasil Dihapus");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Data Gagal Dihapus");
+                    }
+                    Console.ReadKey();
+                    break;
+                case 6:
+                    Main();
+                    break;
+                default:
+                    Console.Write("Pilihan salah");
+                    Console.ReadKey();
+                    break;
             }
-            sqlDataReader.Close();
-        }
-        sqlConnection.Close();
-    }
-    //Read by Id
-    public void GetByIdRegion(int id)
-    {
-        sqlConnection = new SqlConnection(connectionString);
-
-        try
-        {
-            // Membuat instance SqlCommand untuk mendifinisikan sebuah query & connection
-            SqlCommand sqlCommand = new SqlCommand();
-            sqlCommand.Connection = sqlConnection;
-            sqlCommand.CommandText = "SELECT * FROM tb_m_regions WHERE id = @id;";
-
-            SqlParameter pId = new SqlParameter();
-            pId.ParameterName = "@id";
-            pId.SqlDbType = System.Data.SqlDbType.Int;
-            pId.Value = id;
-            sqlCommand.Parameters.Add(pId);
-
-            // membuka koneksi
-            sqlConnection.Open();
-
-            using (SqlDataReader sqlDataReader = sqlCommand.ExecuteReader())
-            {
-                // Mengecek apakah ada data atau tidak
-                if (sqlDataReader.HasRows)
-                {
-                    //jika ada, maka tampilkan datanya
-                    sqlDataReader.Read();
-
-                    Console.WriteLine("Id : " + sqlDataReader[0]);
-                    Console.WriteLine("Name : " + sqlDataReader[1]);
-                }
-                else
-                {
-                    Console.WriteLine("Id Tidak Ditemukan");
-                }
-                sqlDataReader.Close();
-            }
-            sqlConnection.Close();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine(ex.Message);
-        }
-    }
-    //Update
-    public void UpdateRegion()
-    {
-        //sqlCommand.CommandText = "UPDATE tb_m_regions SET name = @edit WHERE id = @edit_id;";
-    }
-    //Delete
-    public void DeleteRegion()
-    {
-        //sqlCommand.CommandText = "DELETE FROM tb_m_regions WHERE id = @delete_id;";
+        } while (key);
     }
 }
