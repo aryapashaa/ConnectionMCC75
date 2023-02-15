@@ -7,23 +7,29 @@ namespace ConnectionMCC75;
 
 public class Program
 {
+    //Pembuatan object region
     public static Region region = new Region();
     public static RegionCommands command_region = new RegionCommands();
 
+    //Pembuatan object country
     public static Country country = new Country();
     public static CountryCommands command_country = new CountryCommands();
 
     public static void Main()
     {
+        string[] table = new string[] { "Regions", "Countries", "Exit" };
+
         Console.Clear();
         Console.WriteLine("======CRUD======");
-        string[] table = new string[] { "Regions", "Countries" , "Exit"};
+        
         for (int i = 0; i < table.Length; i++)
         {
             Console.WriteLine($"[{i + 1}] - {table[i]}");
         }
+
         Console.WriteLine("================");
         Console.Write("Pilih Tabel: ");
+
         int pilihTabel = Convert.ToInt32(Console.ReadLine());
 
         switch (pilihTabel)
@@ -44,16 +50,20 @@ public class Program
     public static void TableRegions()
     {
         bool key = true;
+
         do
         {
+            string[] crud = new string[] { "CREATE", "READ", "READ BY ID", "UPDATE", "DELETE", "BACK" };
+
             Console.Clear();
             Console.WriteLine("==REGIONS TABLE==");
             Console.WriteLine("\n=======MENU======");
-            string[] crud = new string[] { "CREATE", "READ", "READ BY ID", "UPDATE", "DELETE", "BACK" };
+
             for (int i = 0; i < crud.Length; i++)
             {
                 Console.WriteLine($"[{i + 1}] - {crud[i]}");
             }
+
             Console.WriteLine("=================");
             Console.Write("Pilih Menu: ");
             int pilihMenu = Convert.ToInt32(Console.ReadLine());
@@ -62,10 +72,13 @@ public class Program
             {
                 case 1: //Create
                     Console.Clear();
+
                     Console.Write("Masukkan nama Region baru : ");
                     string inputRegion = Console.ReadLine();
+
                     region.Name = inputRegion;
                     int resultCreate = command_region.Insert(region);
+
                     if (resultCreate > 0)
                     {
                         Console.WriteLine("Data Berhasil Disimpan");
@@ -78,7 +91,9 @@ public class Program
                     break;
                 case 2: //Read
                     Console.Clear();
+
                     List<Region> resultRead = command_region.GetAll();
+
                     if (resultRead == null)
                     {
                         Console.WriteLine("Data tidak ditemukan");
@@ -95,9 +110,12 @@ public class Program
                     break;
                 case 3:
                     Console.Clear();
+
                     Console.Write("Masukkan ID yang ingin ditampilkan : ");
                     int tampilId = Convert.ToInt32(Console.ReadLine());
+
                     Region resultReadById = command_region.GetById(tampilId);
+
                     if (resultReadById == null)
                     {
                         Console.WriteLine("Data tidak ditemukan");
@@ -111,13 +129,18 @@ public class Program
                     break;
                 case 4:
                     Console.Clear();
+
                     Console.Write("Masukkan ID yang ingin diubah : ");
                     int editId = Convert.ToInt32(Console.ReadLine());
+
                     Console.Write("Masukkan nama Region baru : ");
                     string editRegion = Console.ReadLine();
+
                     region.Id = editId;
                     region.Name = editRegion;
+
                     int resultUpdate = command_region.Update(region);
+
                     if (resultUpdate > 0)
                     {
                         Console.WriteLine("Data Berhasil Diperbaharui");
@@ -130,9 +153,12 @@ public class Program
                     break;
                 case 5:
                     Console.Clear();
+
                     Console.Write("Masukkan ID yang ingin dihapus : ");
                     int hapusId = Convert.ToInt32(Console.ReadLine());
+
                     int resultDelete = command_region.Delete(hapusId);
+
                     if (resultDelete > 0)
                     {
                         Console.WriteLine("Data Berhasil Dihapus");
@@ -156,16 +182,20 @@ public class Program
     public static void TableCountries()
     {
         bool key = true;
+
         do
         {
+            string[] crud = new string[] { "CREATE", "READ", "READ BY ID", "UPDATE", "DELETE", "BACK" };
+
             Console.Clear();
             Console.WriteLine("==COUNTRIES TABLE==");
             Console.WriteLine("\n========MENU=======");
-            string[] crud = new string[] { "CREATE", "READ", "READ BY ID", "UPDATE", "DELETE", "BACK" };
+            
             for (int i = 0; i < crud.Length; i++)
             {
                 Console.WriteLine($"[{i + 1}] - {crud[i]}");
             }
+
             Console.WriteLine("===================");
             Console.Write("Pilih Menu: ");
             int pilihMenu = Convert.ToInt32(Console.ReadLine());
@@ -174,13 +204,18 @@ public class Program
             {
                 case 1: //Create
                     Console.Clear();
+
                     Console.Write("Masukkan nama Country baru : ");
                     string inputCountry = Console.ReadLine();
+
                     Console.Write("Masukkan Region ID-nya : ");
                     int inputRegId = Convert.ToInt32(Console.ReadLine());
+
                     country.Name = inputCountry;
                     country.RegionId = inputRegId;
+
                     int resultCreate = command_country.Insert(country);
+
                     if (resultCreate > 0)
                     {
                         Console.WriteLine("Data Berhasil Disimpan");
@@ -193,7 +228,9 @@ public class Program
                     break;
                 case 2: //Read
                     Console.Clear();
+
                     List<Country> resultRead = command_country.GetAll();
+
                     if (resultRead == null)
                     {
                         Console.WriteLine("Data tidak ditemukan");
@@ -211,9 +248,12 @@ public class Program
                     break;
                 case 3:
                     Console.Clear();
+
                     Console.Write("Masukkan ID yang ingin ditampilkan : ");
                     int tampilId = Convert.ToInt32(Console.ReadLine());
+
                     Country resultReadById = command_country.GetById(tampilId);
+
                     if (resultReadById == null)
                     {
                         Console.WriteLine("Data tidak ditemukan");
@@ -228,16 +268,22 @@ public class Program
                     break;
                 case 4:
                     Console.Clear();
+
                     Console.Write("Masukkan ID yang ingin diubah : ");
                     int editId = Convert.ToInt32(Console.ReadLine());
+
                     Console.Write("Masukkan nama Country baru : ");
                     string editCountry = Console.ReadLine();
+
                     Console.Write("Masukkan Region ID baru : ");
                     int editRegId = Convert.ToInt32(Console.ReadLine());
+
                     country.Id = editId;
                     country.Name = editCountry;
                     country.RegionId = editRegId;
+
                     int resultUpdate = command_country.Update(country);
+
                     if (resultUpdate > 0)
                     {
                         Console.WriteLine("Data Berhasil Diperbaharui");
@@ -252,7 +298,9 @@ public class Program
                     Console.Clear();
                     Console.Write("Masukkan ID yang ingin dihapus : ");
                     int hapusId = Convert.ToInt32(Console.ReadLine());
+
                     int resultDelete = command_country.Delete(hapusId);
+
                     if (resultDelete > 0)
                     {
                         Console.WriteLine("Data Berhasil Dihapus");
