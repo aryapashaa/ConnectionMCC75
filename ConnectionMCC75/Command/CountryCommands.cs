@@ -1,4 +1,5 @@
-﻿using ConnectionMCC75.Models;
+﻿using ConnectionMCC75.Context;
+using ConnectionMCC75.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -11,12 +12,11 @@ namespace ConnectionMCC75.Command;
 public class CountryCommands
 {
     SqlConnection sqlConnection;
-    string connectionString = "Data Source=ARYA;Initial Catalog=db_hr_arya;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
     public int Insert(Country entity)
     {
         int result = 0;
 
-        using (sqlConnection = new SqlConnection(connectionString))
+        using (sqlConnection = new SqlConnection(DbContext.CONNECTION_STRING))
         {
             sqlConnection.Open();
             SqlTransaction sqlTransaction = sqlConnection.BeginTransaction();
@@ -64,7 +64,7 @@ public class CountryCommands
     {
         List<Country> listCountry = new List<Country>();
 
-        sqlConnection = new SqlConnection(connectionString);
+        sqlConnection = new SqlConnection(DbContext.CONNECTION_STRING);
 
         SqlCommand sqlCommand = new SqlCommand();
         sqlCommand.Connection = sqlConnection;
@@ -96,7 +96,7 @@ public class CountryCommands
     {
         Country country = new Country();
 
-        sqlConnection = new SqlConnection(connectionString);
+        sqlConnection = new SqlConnection(DbContext.CONNECTION_STRING);
 
         try
         {
@@ -138,7 +138,7 @@ public class CountryCommands
     {
         int result = 0;
 
-        using (sqlConnection = new SqlConnection(connectionString))
+        using (sqlConnection = new SqlConnection(DbContext.CONNECTION_STRING))
         {
             sqlConnection.Open();
             SqlTransaction sqlTransaction = sqlConnection.BeginTransaction();
@@ -197,7 +197,7 @@ public class CountryCommands
     {
         int result = 0;
 
-        using (sqlConnection = new SqlConnection(connectionString))
+        using (sqlConnection = new SqlConnection(DbContext.CONNECTION_STRING))
         {
             sqlConnection.Open();
             SqlTransaction sqlTransaction = sqlConnection.BeginTransaction();

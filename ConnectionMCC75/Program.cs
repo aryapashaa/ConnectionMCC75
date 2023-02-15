@@ -17,34 +17,75 @@ public class Program
 
     public static void Main()
     {
-        string[] table = new string[] { "Regions", "Countries", "Exit" };
+        //string[] table = new string[] { "Regions", "Countries", "Exit" };
 
-        Console.Clear();
-        Console.WriteLine("======CRUD======");
+        //Console.Clear();
+        //Console.WriteLine("======CRUD======");
         
-        for (int i = 0; i < table.Length; i++)
+        //for (int i = 0; i < table.Length; i++)
+        //{
+        //    Console.WriteLine($"[{i + 1}] - {table[i]}");
+        //}
+
+        //Console.WriteLine("================");
+        //Console.Write("Pilih Tabel: ");
+
+        //int pilihTabel = Convert.ToInt32(Console.ReadLine());
+
+        //switch (pilihTabel)
+        //{
+        //    case 1:
+        //        TableRegions();
+        //        break;
+        //    case 2:
+        //        TableCountries();
+        //        break;
+        //    case 3:
+        //        System.Environment.Exit(0);
+        //        break;
+        //    default:
+        //        break;
+        //}
+
+        CountryCommands countryCommands = new CountryCommands();
+        RegionCommands regionCommands= new RegionCommands();
+
+        // Method Syntax
+        var resultMethod = countryCommands.GetAll()
+            .Join(regionCommands.GetAll(), 
+            c => c.RegionId, r => r.Id,
+            (c, r) => new
+            {
+                Id = c.Id,
+                Name = c.Name,
+                RegionName = r.Name
+            });
+
+        foreach (var item in resultMethod)
         {
-            Console.WriteLine($"[{i + 1}] - {table[i]}");
+            Console.WriteLine("Id : " + item.Id);
+            Console.WriteLine("Name : " + item.Name);
+            Console.WriteLine("Region Name : " + item.RegionName);
+            Console.WriteLine("");
         }
 
-        Console.WriteLine("================");
-        Console.Write("Pilih Tabel: ");
+        // Query Syntax
+        var resultQuery = from c in countryCommands.GetAll()
+                          join r in regionCommands.GetAll()
+                          on c.RegionId equals r.Id
+                          select new
+                          {
+                              Id = c.Id,
+                              Name = c.Name,
+                              RegionName = r.Name
+                          };
 
-        int pilihTabel = Convert.ToInt32(Console.ReadLine());
-
-        switch (pilihTabel)
+        foreach (var item in resultQuery)
         {
-            case 1:
-                TableRegions();
-                break;
-            case 2:
-                TableCountries();
-                break;
-            case 3:
-                System.Environment.Exit(0);
-                break;
-            default:
-                break;
+            Console.WriteLine("Id : " + item.Id);
+            Console.WriteLine("Name : " + item.Name);
+            Console.WriteLine("Region Name : " + item.RegionName);
+            Console.WriteLine("");
         }
     }
     public static void TableRegions()

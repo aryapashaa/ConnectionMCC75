@@ -1,4 +1,5 @@
-﻿using ConnectionMCC75.Models;
+﻿using ConnectionMCC75.Context;
+using ConnectionMCC75.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -11,12 +12,11 @@ namespace ConnectionMCC75.Command;
 public class RegionCommands
 {
     SqlConnection sqlConnection;
-    string connectionString = "Data Source=ARYA;Initial Catalog=db_hr_arya;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False";
     public int Insert(Region entity)
     {
         int result = 0;
 
-        using (sqlConnection = new SqlConnection(connectionString))
+        using (sqlConnection = new SqlConnection(DbContext.CONNECTION_STRING))
         {
             sqlConnection.Open();
             SqlTransaction sqlTransaction = sqlConnection.BeginTransaction();
@@ -61,7 +61,7 @@ public class RegionCommands
     {
         List<Region> listRegion = new List<Region>();
 
-        sqlConnection = new SqlConnection(connectionString);
+        sqlConnection = new SqlConnection(DbContext.CONNECTION_STRING);
         
         SqlCommand sqlCommand = new SqlCommand();
         sqlCommand.Connection = sqlConnection;
@@ -92,7 +92,7 @@ public class RegionCommands
     {
         Region region = new Region();
 
-        sqlConnection = new SqlConnection(connectionString);
+        sqlConnection = new SqlConnection(DbContext.CONNECTION_STRING);
 
         try
         {
@@ -133,7 +133,7 @@ public class RegionCommands
     {
         int result = 0;
 
-        using (sqlConnection = new SqlConnection(connectionString))
+        using (sqlConnection = new SqlConnection(DbContext.CONNECTION_STRING))
         {
             sqlConnection.Open();
             SqlTransaction sqlTransaction = sqlConnection.BeginTransaction();
@@ -187,7 +187,7 @@ public class RegionCommands
     {
         int result = 0;
 
-        using (sqlConnection = new SqlConnection(connectionString))
+        using (sqlConnection = new SqlConnection(DbContext.CONNECTION_STRING))
         {
             sqlConnection.Open();
             SqlTransaction sqlTransaction = sqlConnection.BeginTransaction();
