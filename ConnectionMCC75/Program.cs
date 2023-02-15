@@ -16,12 +16,13 @@ public class Program
     public static void Main()
     {
         Console.Clear();
-        Console.WriteLine("==CRUD==");
+        Console.WriteLine("======CRUD======");
         string[] table = new string[] { "Regions", "Countries" , "Exit"};
         for (int i = 0; i < table.Length; i++)
         {
             Console.WriteLine($"[{i + 1}] - {table[i]}");
         }
+        Console.WriteLine("================");
         Console.Write("Pilih Tabel: ");
         int pilihTabel = Convert.ToInt32(Console.ReadLine());
 
@@ -47,12 +48,13 @@ public class Program
         {
             Console.Clear();
             Console.WriteLine("==REGIONS TABLE==");
-            Console.WriteLine("==MENU==");
-            string[] crud = new string[] { "Create", "Read", "Read by ID", "Update", "Delete", "Back" };
+            Console.WriteLine("\n=======MENU======");
+            string[] crud = new string[] { "CREATE", "READ", "READ BY ID", "UPDATE", "DELETE", "BACK" };
             for (int i = 0; i < crud.Length; i++)
             {
                 Console.WriteLine($"[{i + 1}] - {crud[i]}");
             }
+            Console.WriteLine("=================");
             Console.Write("Pilih Menu: ");
             int pilihMenu = Convert.ToInt32(Console.ReadLine());
 
@@ -158,12 +160,13 @@ public class Program
         {
             Console.Clear();
             Console.WriteLine("==COUNTRIES TABLE==");
-            Console.WriteLine("==MENU==");
-            string[] crud = new string[] { "Create", "Read", "Read by ID", "Update", "Delete", "Back" };
+            Console.WriteLine("\n========MENU=======");
+            string[] crud = new string[] { "CREATE", "READ", "READ BY ID", "UPDATE", "DELETE", "BACK" };
             for (int i = 0; i < crud.Length; i++)
             {
                 Console.WriteLine($"[{i + 1}] - {crud[i]}");
             }
+            Console.WriteLine("===================");
             Console.Write("Pilih Menu: ");
             int pilihMenu = Convert.ToInt32(Console.ReadLine());
 
@@ -267,4 +270,5 @@ public class Program
             }
         } while (key);
     }
+
 }
